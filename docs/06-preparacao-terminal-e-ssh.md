@@ -185,3 +185,23 @@ Antes de colar um comando do tutorial, identificar onde ele deve rodar:
 - **Container:** somente comandos precedidos por algo como `docker compose exec openclaw-vibestack ...`.
 
 Essa separação deve ser preservada nas próximas instruções do projeto.
+
+## 9. Estado confirmado do ambiente local — 2026-09-02
+
+No computador Windows usado para acompanhar o projeto, já foram confirmados:
+
+```text
+Git: 2.55.0.windows.3
+OpenSSH for Windows: 9.5p1
+GNU Bash: 5.3.15(1)-release
+```
+
+O Bash está instalado em:
+
+```text
+C:\Program Files\Git\bin\bash.exe
+```
+
+No momento da verificação, `git` e `ssh` já estavam disponíveis diretamente no PowerShell, mas `bash` ainda não estava no `PATH` do usuário. O executável funcionou normalmente quando chamado pelo caminho completo.
+
+Para permitir o comando `bash` diretamente no PowerShell, adicionar `C:\Program Files\Git\bin` ao `PATH` do usuário e reabrir o PowerShell.
