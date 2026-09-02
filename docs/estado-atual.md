@@ -57,6 +57,7 @@ Criados nesta primeira consolidação:
 - `docs/03-mcps-integracoes.md`
 - `docs/04-operacao-seguranca-troubleshooting.md`
 - `docs/05-regras-de-consulta-e-evolucao.md`
+- `docs/06-preparacao-terminal-e-ssh.md`
 - `docs/estado-atual.md`
 - `CHANGELOG.md`
 
@@ -109,7 +110,23 @@ Tecnologias e integrações documentadas:
 6. Registrar decisões e mudanças relevantes conforme avançarmos no tutorial.
 7. Preservar governança humana para ações que possam gerar gasto ou mudanças relevantes.
 
-## 7. O que ainda não está confirmado como implementado
+## 7. Ambiente local confirmado
+
+No Windows do usuário, em 2026-09-02, foi confirmado:
+
+- Git instalado e funcional;
+- OpenSSH instalado e funcional;
+- Bash do Git instalado e funcional;
+- PowerShell em uso como terminal principal;
+- pasta `C:\Users\cristhyan\.ssh` criada;
+- chave SSH `ed25519` criada corretamente em `id_ed25519` e `id_ed25519.pub`;
+- chave pública visualizada com sucesso.
+
+**Não registrar nem versionar o conteúdo da chave privada.** A chave pública pode ser usada para cadastro em VPS/provedor.
+
+Próxima etapa local/remota: cadastrar a chave pública no provedor/VPS e validar o acesso SSH ao servidor.
+
+## 8. O que ainda não está confirmado como implementado
 
 Neste momento, a documentação **não comprova** que o nosso ambiente já possui:
 
@@ -130,7 +147,7 @@ Neste momento, a documentação **não comprova** que o nosso ambiente já possu
 
 Esses itens devem mudar de status somente após confirmação prática.
 
-## 8. Próximo princípio de trabalho
+## 9. Próximo princípio de trabalho
 
 A partir deste ponto, cada nova dúvida, etapa do tutorial ou decisão deve ser tratada como uma oportunidade de:
 
