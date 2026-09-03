@@ -1,12 +1,12 @@
 # Estado Atual do Projeto
 
-Data do snapshot: **2026-09-02**
+Data do snapshot: **2026-09-03**
 
 ## 1. Situação geral
 
-O projeto está na fase de **absorção, estudo e documentação da arquitetura** apresentada no tutorial baseado em `ericorenato/vibestack-openclaw`.
+O projeto está na fase de **preparação do ambiente local Windows** para executar a stack baseada em `ericorenato/vibestack-openclaw` sem VPS.
 
-Ainda não deve ser assumido que toda a stack do tutorial está instalada ou configurada no nosso ambiente. A documentação registra o funcionamento da base técnica e servirá para orientar as próximas decisões e implementações.
+Ainda não deve ser assumido que toda a stack do tutorial está instalada ou configurada no nosso ambiente. A documentação registra o funcionamento da base técnica e o estado real já validado na máquina local.
 
 ## 2. Repositórios definidos
 
@@ -16,11 +16,9 @@ Ainda não deve ser assumido que toda a stack do tutorial está instalada ou con
 
 Função: referência técnica e implementação-base.
 
-Snapshot validado em 2026-09-02:
+Snapshot de referência previamente validado:
 
 `f1d5329c4f30ac28cb10a8a93bf3b41e43147217`
-
-Data do commit: 2026-07-21.
 
 ### Repositório oficial do nosso projeto
 
@@ -44,11 +42,7 @@ A integração utilizada nesta conversa possui no repositório `7psdigitaltech-e
 - escrita/push: confirmada;
 - administração via integração: reportada como disponível pelo GitHub connector.
 
-A criação/atualização de arquivos foi testada com sucesso em 2026-09-02.
-
 ## 4. Base documental criada
-
-Criados nesta primeira consolidação:
 
 - `README.md`
 - `docs/00-contexto-mestre.md`
@@ -58,6 +52,7 @@ Criados nesta primeira consolidação:
 - `docs/04-operacao-seguranca-troubleshooting.md`
 - `docs/05-regras-de-consulta-e-evolucao.md`
 - `docs/06-preparacao-terminal-e-ssh.md`
+- `docs/07-execucao-local-windows.md`
 - `docs/estado-atual.md`
 - `CHANGELOG.md`
 
@@ -109,31 +104,46 @@ Tecnologias e integrações documentadas:
 5. Não armazenar secrets neste repositório público.
 6. Registrar decisões e mudanças relevantes conforme avançarmos no tutorial.
 7. Preservar governança humana para ações que possam gerar gasto ou mudanças relevantes.
+8. Para o teste atual, usar execução **local no Windows**, sem VPS e sem túnel SSH.
+9. Comandos bash do instalador devem rodar no Git Bash/WSL, não diretamente no PowerShell.
 
 ## 7. Ambiente local confirmado
 
-No Windows do usuário, em 2026-09-02, foi confirmado:
+No Windows do usuário, foi confirmado:
 
-- Git instalado e funcional;
-- OpenSSH instalado e funcional;
-- Bash do Git instalado e funcional;
+- Git `2.55.0.windows.3` instalado e funcional;
+- OpenSSH for Windows `9.5p1` instalado e funcional;
+- GNU Bash `5.3.15` via Git for Windows instalado e funcional;
 - PowerShell em uso como terminal principal;
-- pasta `C:\Users\cristhyan\.ssh` criada;
-- chave SSH `ed25519` criada corretamente em `id_ed25519` e `id_ed25519.pub`;
-- chave pública visualizada com sucesso.
+- chave SSH `ed25519` criada corretamente em `C:\Users\cristhyan\.ssh` (não necessária no teste local atual);
+- Docker Desktop instalado;
+- Docker CLI `29.7.2` funcionando;
+- Docker Compose `v5.5.0` funcionando.
 
-**Não registrar nem versionar o conteúdo da chave privada.** A chave pública pode ser usada para cadastro em VPS/provedor.
+### Estado do Docker em 2026-09-03
 
-Próxima etapa local/remota: cadastrar a chave pública no provedor/VPS e validar o acesso SSH ao servidor.
+`docker --version` e `docker compose version` responderam normalmente, porém `docker info` retornou:
+
+```text
+failed to connect to the docker API at npipe:////./pipe/docker_engine
+```
+
+Interpretação: **o cliente Docker está instalado, mas o Docker Engine/daemon ainda não está rodando**.
+
+Próxima ação: iniciar o Docker Desktop e validar o backend WSL 2 / Engine até `docker info` retornar a seção `Server` normalmente.
 
 ## 8. O que ainda não está confirmado como implementado
 
-Neste momento, a documentação **não comprova** que o nosso ambiente já possui:
+Neste momento, ainda não foi confirmado:
 
-- VPS configurada para esta agência;
-- stack Docker instalada;
-- OpenClaw instalado;
-- Hermes instalado;
+- Docker Engine local saudável;
+- repositório `vibestack-openclaw` clonado localmente;
+- `install.sh` executado com sucesso;
+- imagem Docker da stack buildada;
+- containers da stack em execução;
+- OpenClaw configurado;
+- Hermes configurado;
+- Ollama/LM Studio operacional;
 - agentes configurados;
 - Meta Ads autenticado;
 - Google Ads autenticado;
