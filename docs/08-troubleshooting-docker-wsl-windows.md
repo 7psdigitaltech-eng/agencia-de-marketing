@@ -10,48 +10,51 @@ No computador Windows de teste local:
 - `SecondLevelAddressTranslationExtensions = True`;
 - Docker Desktop instalado;
 - Docker CLI e Compose instalados;
-- Docker Engine não inicia;
-- Docker Desktop exibe `Virtualization support not detected`;
-- `wsl --version` não retorna versão e mostra apenas a ajuda do comando.
+- WSL atualizado para `2.7.12.0`;
+- kernel WSL `6.18.33.2-2`;
+- Windows 10 build `19045.6466`;
+- `wsl --status` informa versão padrão 2;
+- `hypervisorlaunchtype = Auto`;
+- componentes `Microsoft-Windows-Subsystem-Linux` e `VirtualMachinePlatform` foram habilitados com sucesso e o Windows foi reiniciado;
+- nenhuma distribuição WSL de usuário está instalada;
+- serviço `com.docker.service` aparece `Stopped`;
+- Docker Desktop não inicia o Linux Engine.
 
-## Interpretação
+## Erro atual confirmado nos logs do Docker
 
-A virtualização de hardware está habilitada no firmware. O sintoma de `wsl --version` sem informações de versão é compatível com a versão inbox/legada do WSL, que não atende os requisitos atuais do Docker Desktop.
-
-O Docker Desktop atual requer WSL 2.1.5 ou superior e recomenda manter o WSL atualizado.
-
-## Próxima correção recomendada
-
-No PowerShell como Administrador:
-
-```powershell
-wsl --install --no-distribution --web-download
-```
-
-Esse comando deve instalar/atualizar a infraestrutura moderna do WSL sem necessidade de instalar uma distribuição Linux de usuário, já que o Docker Desktop utiliza seu próprio backend WSL.
-
-Se o comando não conseguir concluir a configuração, habilitar explicitamente os componentes do Windows:
+O comando:
 
 ```powershell
-dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-bcdedit /set hypervisorlaunchtype auto
+docker desktop logs -p 2 | Select-Object -Last 80
 ```
 
-Depois reiniciar o Windows.
+mostrou que o Docker tenta registrar/importar a distribuição interna `docker-desktop`, mas a criação da VM falha com:
 
-Após o reboot, validar:
+```text
+Wsl/Service/RegisterDistro/CreateVm/HCS/HCS_E_HYPERV_NOT_INSTALLED
+```
+
+A mensagem do WSL informa que o WSL2 não pode ser iniciado porque a virtualização/hipervisor não está efetivamente disponível para criação da VM.
+
+Também aparecem erros anteriores de `docker-desktop` não encontrado, o que é consequência de a distribuição interna ainda não ter sido criada.
+
+## Interpretação atual
+
+A ausência de uma distribuição Linux de usuário não é, por si só, a causa principal: o Docker Desktop usa/cria sua própria distribuição interna. O ponto de falha atual é a camada de virtualização utilizada pelo WSL 2/HCS ao tentar criar a VM.
+
+Embora a CPU informe virtualização de firmware ativa e `hypervisorlaunchtype` esteja em `Auto`, ainda é necessário confirmar se o hipervisor foi realmente carregado pelo Windows e se os componentes/serviços de virtualização estão ativos no sistema em execução.
+
+## Próximo diagnóstico
+
+No PowerShell como Administrador, verificar:
 
 ```powershell
-wsl --version
-wsl --status
-wsl -l -v
+systeminfo | findstr /i "Hyper-V"
+Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
+Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+Get-Service vmcompute,HvHost -ErrorAction SilentlyContinue
 ```
 
-Então abrir o Docker Desktop e validar:
-
-```powershell
-docker info
-```
+O `systeminfo` deve indicar que um hipervisor foi detectado. Se não indicar, o problema ainda está na carga/instalação efetiva do hipervisor, apesar de `bcdedit` estar configurado como `Auto`.
 
 Não voltar ao instalador do Vibestack até `docker info` responder com uma seção `Server` funcional.
