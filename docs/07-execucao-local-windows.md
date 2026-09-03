@@ -18,19 +18,19 @@ A chave SSH criada pode ser mantida para uso futuro, mas não participa do teste
 
 ## 2. Pré-requisitos confirmados
 
-Ambiente já confirmado em 2026-09-02:
+Ambiente já confirmado em 2026-09-02/03:
 
 - Git 2.55.0.windows.3;
 - OpenSSH for Windows 9.5p1;
 - GNU Bash 5.3.15 via Git for Windows;
-- chave SSH local criada (não necessária para execução local).
+- chave SSH local criada (não necessária para execução local);
+- Docker CLI 29.7.2 instalado;
+- Docker Compose v5.5.0 instalado.
 
 Ainda deve ser confirmado antes do build:
 
-- Docker Desktop instalado;
 - Docker Desktop aberto e Engine ativo;
-- `docker --version` funcionando;
-- `docker compose version` funcionando;
+- `docker info` retornando a seção Server sem erro;
 - memória suficiente alocada ao Docker Desktop.
 
 O README do projeto original alerta que o build do OpenClaw é pesado; abaixo de aproximadamente 8 GB disponíveis ao Docker podem ocorrer erros de OOM/exit 137. Aproximadamente 12 GB é uma configuração confortável quando o computador dispõe dessa memória.
@@ -39,7 +39,13 @@ O README do projeto original alerta que o build do OpenClaw é pesado; abaixo de
 
 No Windows, o projeto original recomenda executar o instalador e comandos bash no **Git Bash ou WSL**, não diretamente no PowerShell/CMD.
 
-O PowerShell pode continuar sendo usado para tarefas do Windows e para verificar Docker/Git. Para o `install.sh`, preferir abrir o Git Bash.
+O PowerShell pode continuar sendo usado para tarefas do Windows e para verificar Docker/Git. Para o `install.sh`, preferir Git Bash ou invocar explicitamente o Bash do Git a partir do PowerShell.
+
+Exemplo equivalente no PowerShell:
+
+```powershell
+curl.exe -fsSL https://raw.githubusercontent.com/ericorenato/vibestack-openclaw/main/install.sh | & "C:\Program Files\Git\bin\bash.exe"
+```
 
 ## 4. Verificar Docker
 
@@ -51,9 +57,9 @@ docker compose version
 docker info
 ```
 
-Se `docker` não for reconhecido, instalar/abrir Docker Desktop antes de continuar.
+Se `docker` não for reconhecido, instalar o Docker Desktop.
 
-Se `docker --version` funcionar, mas `docker info` falhar por não conseguir conectar ao daemon/engine, abrir o Docker Desktop e aguardar o Engine ficar pronto.
+Se `docker --version` e `docker compose version` funcionarem, mas `docker info` falhar por não conseguir conectar ao daemon/engine, o CLI está instalado porém o Engine está parado. Abrir o Docker Desktop e aguardar o Engine ficar pronto.
 
 ## 5. Pasta recomendada
 
@@ -177,10 +183,10 @@ Alguns MCPs podem aparecer registrados, mas operações que dependem de credenci
 
 ```text
 1. Confirmar Docker Desktop
-2. Confirmar docker + docker compose
-3. Abrir Git Bash
-4. Clonar vibestack-openclaw em C:\Projetos
-5. Rodar ./install.sh
+2. Confirmar docker + docker compose + docker info
+3. Trabalhar a partir de C:\Projetos
+4. Rodar o instalador via Git Bash ou Bash invocado pelo PowerShell
+5. Rodar ./install.sh / bootstrap
 6. Escolher inicialmente Ollama (LM Studio desligado)
 7. Subir com docker compose up -d
 8. Conferir docker compose ps e logs
@@ -205,3 +211,28 @@ Se algo falhar, não avançar cegamente. Identificar primeiro se o erro está em
 - MCP específico.
 
 Registrar no repositório o estado real somente após cada etapa ser confirmada na máquina.
+
+## 14. Diagnóstico real observado — 2026-09-03
+
+O bootstrap foi executado a partir do PowerShell chamando explicitamente `curl.exe` e o Bash do Git. O script:
+
+- detectou Windows corretamente (`MINGW64_NT-10.0-19045`);
+- detectou Git 2.55.0.windows.3;
+- detectou Docker 29.7.2;
+- detectou Docker Compose v5.5.0;
+- parou corretamente porque `docker info` não conseguiu falar com o daemon;
+- exibiu a orientação do próprio instalador: abrir o Docker Desktop, esperar ficar `running` e executar novamente.
+
+Como o PowerShell estava em `C:\WINDOWS\system32`, o bootstrap clonou automaticamente o repositório em:
+
+```text
+C:\WINDOWS\system32\vibestack-openclaw
+```
+
+Esse local não deve ser adotado como pasta oficial de trabalho. Para o nosso teste local, usar:
+
+```text
+C:\Projetos\vibestack-openclaw
+```
+
+Antes de repetir o instalador, confirmar `docker info` funcionando. Depois remover o clone acidental de `C:\WINDOWS\system32` e repetir a instalação a partir de `C:\Projetos`.
