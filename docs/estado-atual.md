@@ -1,6 +1,6 @@
 # Estado Atual do Projeto
 
-Data do snapshot: **2026-09-03**
+Data do snapshot: **2026-09-04**
 
 ## 1. Situação geral
 
@@ -53,6 +53,7 @@ A integração utilizada nesta conversa possui no repositório `7psdigitaltech-e
 - `docs/05-regras-de-consulta-e-evolucao.md`
 - `docs/06-preparacao-terminal-e-ssh.md`
 - `docs/07-execucao-local-windows.md`
+- `docs/08-troubleshooting-docker-wsl-windows.md`
 - `docs/estado-atual.md`
 - `CHANGELOG.md`
 
@@ -118,26 +119,30 @@ No Windows do usuário, foi confirmado:
 - chave SSH `ed25519` criada corretamente em `C:\Users\cristhyan\.ssh` (não necessária no teste local atual);
 - Docker Desktop instalado;
 - Docker CLI `29.7.2` funcionando;
-- Docker Compose `v5.5.0` funcionando.
+- Docker Compose `v5.5.0` funcionando;
+- WSL `2.7.12.0` com kernel `6.18.33.2-2`;
+- virtualização de hardware habilitada no firmware;
+- `hypervisorlaunchtype` configurado como `Auto`;
+- componentes `Microsoft-Windows-Subsystem-Linux` e `VirtualMachinePlatform` habilitados.
 
-### Estado do Docker em 2026-09-03
+### Estado do Docker em 2026-09-04
 
-`docker --version` e `docker compose version` responderam normalmente, porém `docker info` retornou:
+Após o troubleshooting de WSL/virtualização, o Docker Desktop passou a abrir normalmente e a interface exibiu **`Engine running`**.
 
-```text
-failed to connect to the docker API at npipe:////./pipe/docker_engine
+Isso confirma visualmente que o Docker Engine iniciou. A validação final via terminal ainda deve ser feita com:
+
+```powershell
+docker info
 ```
 
-Interpretação: **o cliente Docker está instalado, mas o Docker Engine/daemon ainda não está rodando**.
-
-Próxima ação: iniciar o Docker Desktop e validar o backend WSL 2 / Engine até `docker info` retornar a seção `Server` normalmente.
+Critério de aceite: `docker info` deve retornar uma seção `Server:` preenchida, sem erro de conexão com `dockerDesktopLinuxEngine`.
 
 ## 8. O que ainda não está confirmado como implementado
 
 Neste momento, ainda não foi confirmado:
 
-- Docker Engine local saudável;
-- repositório `vibestack-openclaw` clonado localmente;
+- validação terminal final do Docker Engine via `docker info`;
+- repositório `vibestack-openclaw` clonado no diretório local definitivo;
 - `install.sh` executado com sucesso;
 - imagem Docker da stack buildada;
 - containers da stack em execução;
